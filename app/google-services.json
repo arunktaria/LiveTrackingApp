@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "436859663840",
+    "project_id": "livetrackingapp-a752d",
+    "storage_bucket": "livetrackingapp-a752d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:436859663840:android:387d896b4d420062e3e785",
+        "android_client_info": {
+          "package_name": "com.example.livetrackingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "436859663840-89qncgpjjor7lpl51lli04844tmugd3d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.livetrackingapp",
+            "certificate_hash": "7a95cb78b0d8db483c12c7f6083b3a8cbaf93204"
+          }
+        },
+        {
+          "client_id": "436859663840-8a6lj3dmre0brpqa3ss1ar0h9sdb2ovi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgdxkeNNvHCxZrmL1lPEoIXdbFqrKi8x8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "436859663840-8a6lj3dmre0brpqa3ss1ar0h9sdb2ovi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
