@@ -1,9 +1,18 @@
 package com.example.livetrackingapp;
 
-public class LocationData {
-    private  double latitude;
-    private  double longitude;
-    public LocationData() {
+public class DataModel {
+    double bearing;
+    double latitude;
+    double longitude;
+    public DataModel() {
+    }
+
+    public double getBearing() {
+        return bearing;
+    }
+
+    public void setBearing(double bearing) {
+        this.bearing = bearing;
     }
 
     public double getLatitude() {

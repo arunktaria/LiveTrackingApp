@@ -32,11 +32,14 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".TrackOthers"
             android:exported="true"
-           />
+            android:label="@string/title_activity_track_others" />
         <activity
             android:name=".MapsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,8 +47,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".LocationService" />
 
+        <service android:name=".LocationService" />
     </application>
 
 </manifest>

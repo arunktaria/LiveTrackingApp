@@ -26,36 +26,45 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.livetrackingapp.databinding.ActivityMapsBinding;
+import com.example.livetrackingapp.databinding.ActivityTrackOthersBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-
+public class TrackOthers extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
-    private ActivityMapsBinding binding;
-    int maxtime = 1000;
-    int distance = 1;
-    LocationManager manager;
     DatabaseReference reference;
-
     Marker marker;
     LatLng latLng;
     GoogleMap mmap;
     Geocoder geocoder;
     LocationRequest locationRequest;
     FusedLocationProviderClient fusedLocationProviderClient;
-
+    Location location;
+    ActivityTrackOthersBinding bind;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bind = ActivityTrackOthersBinding.inflate(getLayoutInflater());
+        SupportMapFragment mapFragment1 = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.othersmap);
+        mapFragment1.getMapAsync(TrackOthers.this);
+        setContentView(bind.getRoot());
+
+
+        reference=FirebaseDatabase.getInstance().getReference().child("UserLocation");
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION}, 100);
 
         } else {
             Toast.makeText(this, "permission Granted!", Toast.LENGTH_SHORT).show();
-            }
+        }
 
 
         locationRequest = LocationRequest.create();
@@ -66,13 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         latLng = new LatLng(10, 115);
-        binding = ActivityMapsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.basemap);
-        mapFragment.getMapAsync(this);
+
 
         geocoder = new Geocoder(this);
 
@@ -80,43 +83,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         reference = FirebaseDatabase.getInstance().getReference().child("UserLocation");
 
-       // locationData = new LocationData();
 
-        //getLatlang();
+
+
 
 
     }
 
 
     public void startLocationtracking() {
-        Toast.makeText(MapsActivity.this, "in locationtracing", Toast.LENGTH_SHORT).show();
-        if (checkSelfPermission( Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&checkSelfPermission( Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(MapsActivity.this, "start tra permis", Toast.LENGTH_SHORT).show();
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
+    reference.addValueEventListener(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+        DataModel location=snapshot.getValue(DataModel.class);
+       // Toast.makeText(TrackOthers.this, "start tracking...", Toast.LENGTH_SHORT).show();
+         getLocation(location);
         }
-        else {
-            Toast.makeText(MapsActivity.this, "start tra permis grant", Toast.LENGTH_SHORT).show();
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest,locationCallback1,Looper.getMainLooper());
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Toast.makeText(TrackOthers.this, error.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    });
+
     }
 
-    LocationCallback locationCallback1 = new LocationCallback() {
-        @Override
-        public void onLocationResult(@NonNull LocationResult locationResult) {
-            getLocation(locationResult.getLastLocation());
-            super.onLocationResult(locationResult);
-        }
-    };
 
 
-
-    public void getLocation(Location location) {
-        Toast.makeText(MapsActivity.this, "getting Location", Toast.LENGTH_SHORT).show();
+    public void getLocation(DataModel location) {
+        Toast.makeText(TrackOthers.this, "getting Location", Toast.LENGTH_SHORT).show();
         LatLng latLng1 = new LatLng(location.getLatitude(), location.getLongitude());
         marker.setPosition(latLng1);
-
         marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.yellocar));
-        marker.setRotation(location.getBearing());
+        marker.setRotation((float) location.getBearing());
         marker.setAnchor((float) 0.5, (float) 0.5);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng1, 18));
         mmap.animateCamera(CameraUpdateFactory.newLatLng(latLng1));
@@ -132,20 +131,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mmap = googleMap;
         marker = mMap.addMarker(new MarkerOptions().position(latLng).title("They"));
         startLocationtracking();
-        Toast.makeText(MapsActivity.this, "Map is ready...", Toast.LENGTH_SHORT).show();
-
-
+        Toast.makeText(TrackOthers.this, "Map is ready...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode==100)
         {
-            Toast.makeText(MapsActivity.this, "permission granted!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(TrackOthers.this, "permission granted!", Toast.LENGTH_SHORT).show();
         }
         else
         {
-            Toast.makeText(MapsActivity.this, "permission Denied!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(TrackOthers.this, "permission Denied!", Toast.LENGTH_SHORT).show();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }

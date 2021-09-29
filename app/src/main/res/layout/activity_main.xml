@@ -10,11 +10,28 @@
     tools:context=".MainActivity">
 
   <ImageView
-      android:layout_width="match_parent"
+      android:layout_width="100sp"
 
-      android:layout_height="400sp"
+      android:layout_height="100sp"
      android:background="@drawable/locationimg"
      android:layout_gravity="center"
      />
+
+  <Button
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="trace myself"
+      android:onClick="tracemyself"
+      />
+
+
+
+  <Button
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="trace others"
+      android:onClick="traceothers"
+      />
+
 
 </LinearLayout>
