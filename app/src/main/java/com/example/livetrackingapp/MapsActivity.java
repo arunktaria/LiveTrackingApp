@@ -49,7 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        //for taking permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION}, 100);
 
@@ -57,7 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Toast.makeText(this, "permission Granted!", Toast.LENGTH_SHORT).show();
             }
 
-
+        //creating location request object
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(5);
         locationRequest.setFastestInterval(1);
@@ -65,67 +65,59 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        //declaring default latlang
         latLng = new LatLng(10, 115);
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.basemap);
         mapFragment.getMapAsync(this);
 
-        geocoder = new Geocoder(this);
-
-
-
+       //for realtime database
         reference = FirebaseDatabase.getInstance().getReference().child("UserLocation");
-
-       // locationData = new LocationData();
-
-        //getLatlang();
-
 
     }
 
-
+//method to get location
     public void startLocationtracking() {
-        Toast.makeText(MapsActivity.this, "in locationtracing", Toast.LENGTH_SHORT).show();
+
         if (checkSelfPermission( Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&checkSelfPermission( Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(MapsActivity.this, "start tra permis", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapsActivity.this, "Taking permission", Toast.LENGTH_SHORT).show();
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
         }
         else {
-            Toast.makeText(MapsActivity.this, "start tra permis grant", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapsActivity.this, "start Getting Location", Toast.LENGTH_SHORT).show();
             fusedLocationProviderClient.requestLocationUpdates(locationRequest,locationCallback1,Looper.getMainLooper());
         }
     }
 
+    //getting last location using callback object
     LocationCallback locationCallback1 = new LocationCallback() {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
-            getLocation(locationResult.getLastLocation());
+            setLocationMarker(locationResult.getLastLocation());
             super.onLocationResult(locationResult);
         }
     };
 
 
+//setting marker to given location
+    public void setLocationMarker(Location location) {
 
-    public void getLocation(Location location) {
-        Toast.makeText(MapsActivity.this, "getting Location", Toast.LENGTH_SHORT).show();
         LatLng latLng1 = new LatLng(location.getLatitude(), location.getLongitude());
         marker.setPosition(latLng1);
-
         marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.yellocar));
         marker.setRotation(location.getBearing());
         marker.setAnchor((float) 0.5, (float) 0.5);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng1, 18));
-        mmap.animateCamera(CameraUpdateFactory.newLatLng(latLng1));
         mMap.getUiSettings().setAllGesturesEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng1));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng1,17f));
     }
 
-
+    //on map ready to use
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

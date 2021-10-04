@@ -53,20 +53,17 @@ public class TrackOthers extends FragmentActivity implements OnMapReadyCallback 
         mapFragment1.getMapAsync(TrackOthers.this);
         setContentView(bind.getRoot());
 
-
+        //for realtime database
         reference=FirebaseDatabase.getInstance().getReference().child("UserLocation");
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-
-
+        //taking permission from user
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION}, 100);
 
         } else {
             Toast.makeText(this, "permission Granted!", Toast.LENGTH_SHORT).show();
         }
-
-
+        //assing/creating location request object
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(5);
         locationRequest.setFastestInterval(1);
@@ -75,29 +72,19 @@ public class TrackOthers extends FragmentActivity implements OnMapReadyCallback 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         latLng = new LatLng(10, 115);
-
-
         geocoder = new Geocoder(this);
-
-
-
         reference = FirebaseDatabase.getInstance().getReference().child("UserLocation");
-
-
-
-
-
 
     }
 
-
+    //getting location data from realtime database
     public void startLocationtracking() {
     reference.addValueEventListener(new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
         DataModel location=snapshot.getValue(DataModel.class);
        // Toast.makeText(TrackOthers.this, "start tracking...", Toast.LENGTH_SHORT).show();
-         getLocation(location);
+         settingLocationMarker(location);
         }
 
         @Override
@@ -109,31 +96,33 @@ public class TrackOthers extends FragmentActivity implements OnMapReadyCallback 
     }
 
 
+    //setting location marker
+    public void settingLocationMarker(DataModel location) {
 
-    public void getLocation(DataModel location) {
-        Toast.makeText(TrackOthers.this, "getting Location", Toast.LENGTH_SHORT).show();
         LatLng latLng1 = new LatLng(location.getLatitude(), location.getLongitude());
         marker.setPosition(latLng1);
         marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.yellocar));
         marker.setRotation((float) location.getBearing());
         marker.setAnchor((float) 0.5, (float) 0.5);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng1, 18));
-        mmap.animateCamera(CameraUpdateFactory.newLatLng(latLng1));
+        mmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng1,18f));
         mMap.getUiSettings().setAllGesturesEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng1));
+
+
     }
 
-
+    //on map ready.
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mmap = googleMap;
+
         marker = mMap.addMarker(new MarkerOptions().position(latLng).title("They"));
         startLocationtracking();
         Toast.makeText(TrackOthers.this, "Map is ready...", Toast.LENGTH_SHORT).show();
     }
 
+    //operation perform when location is granted or not
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode==100)
